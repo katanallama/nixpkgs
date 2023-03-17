@@ -6,6 +6,7 @@
 , isPy38
 , isPy39
 , isPy310
+, isPy311
 , python
 , torch-bin
 , pythonOlder
@@ -14,7 +15,7 @@
 
 buildPythonPackage rec {
   pname = "torchaudio";
-  version = "0.13.1";
+  version = "2.0.1";
   format = "wheel";
 
   src =
@@ -23,7 +24,7 @@ buildPythonPackage rec {
         srcs = (import ./binary-hashes.nix version)."${stdenv.system}-${pyVerNoDot}" or unsupported;
     in fetchurl srcs;
 
-  disabled = !(isPy38 || isPy39 || isPy310);
+  disabled = !(isPy38 || isPy39 || isPy310 || isPy311);
 
   propagatedBuildInputs = [
     torch-bin
