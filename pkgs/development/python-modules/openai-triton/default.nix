@@ -1,6 +1,5 @@
 { lib
 , buildPythonPackage
-, stdenv
 , fetchurl
 , fetchFromGitHub
 , cmake
@@ -15,6 +14,7 @@
 , filelock
 , torchWithRocm
 , pytest
+, pythonRelaxDepsHook
 }:
 
 let
@@ -55,17 +55,13 @@ buildPythonPackage {
       --replace \
         '= get_thirdparty_packages(triton_cache_path)' \
         '= os.environ["cmakeFlags"].split()'
-    sed -i '/install_requires=/,/],/d' python/setup.py
   ''
   # A typo in setup.py?
-  + ''
-    substituteInPlace python/setup.py \
-      --replace '"tests"' '"test"'
-  ''
-  # Circular dependency, cf. https://github.com/openai/triton/issues/1374
-  + ''
-    substituteInPlace python/setup.py --replace '"torch",' ""
-  ''
+  # NOTE: Ok, now I'm disabling setuptools check anyway
+  # + ''
+  #   substituteInPlace python/setup.py \
+  #     --replace '"tests"' '"test"'
+  # ''
   # Wiring triton=2.0.0 with llcmPackages_rocm.llvm=5.4.3
   # Revisit when updating either triton or llvm
   + ''
@@ -111,6 +107,7 @@ buildPythonPackage {
     })
     llvmPackages.mlir
     lit
+    pythonRelaxDepsHook
   ];
 
   buildInputs = [
@@ -178,6 +175,15 @@ buildPythonPackage {
   passthru.tests = {
     inherit torchWithRocm;
   };
+
+  pythonRemoveDeps = [
+    # Circular dependency, cf. https://github.com/openai/triton/issues/1374
+    "torch"
+
+    # CLI tools without dist-info
+    "cmake"
+    "lit"
+  ];
 
   meta = with lib; {
     description = "Development repository for the Triton language and compiler";

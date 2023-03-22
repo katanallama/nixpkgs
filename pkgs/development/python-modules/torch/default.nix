@@ -6,6 +6,7 @@
 
   # Native build inputs
   cmake, util-linux, linkFarm, symlinkJoin, which, pybind11, removeReferencesTo,
+  pythonRelaxDepsHook,
 
   # Build inputs
   numactl,
@@ -272,6 +273,7 @@ in buildPythonPackage rec {
     which
     ninja
     pybind11
+    pythonRelaxDepsHook
     removeReferencesTo
   ] ++ lib.optionals cudaSupport [ cudatoolkit_joined ]
     ++ lib.optionals rocmSupport [ rocmtoolkit_joined ];
@@ -335,6 +337,11 @@ in buildPythonPackage rec {
       (optionalString (majorMinor version == "1.3" ) "tensorboard")
     ])
     "runHook postCheck"
+  ];
+
+  pythonRemoveDeps = [
+    # In our dist-info the name is just "triton"
+    "pytorch-triton-rocm"
   ];
 
   postInstall = ''
