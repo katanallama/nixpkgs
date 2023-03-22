@@ -184,6 +184,8 @@ python.pkgs.buildPythonApplication rec {
     "tests/vocoder_tests/test_multiband_melgan_train.py"
     "tests/vocoder_tests/test_melgan_train.py"
     "tests/vocoder_tests/test_wavernn_train.py"
+    # throttles CI
+    "tests/tts_tests/test_overflow.py"
   ];
 
   passthru = {
