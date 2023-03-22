@@ -125,11 +125,13 @@ buildPythonPackage {
 
 
   # Avoid GLIBCXX mismatch with other cuda-enabled python packages
-  env.CC = "${backendStdenv.cc}/bin/cc";
-  env.CXX = "${backendStdenv.cc}/bin/c++";
   preConfigure =
-    # Upstream's setup.py tries to write cache somewhere in ~/
     ''
+      export CC="${backendStdenv.cc}/bin/cc";
+      export CXX="${backendStdenv.cc}/bin/c++";
+    ''
+    # Upstream's setup.py tries to write cache somewhere in ~/
+    + ''
       export HOME=$PWD
     ''
     # Upstream's github actions patch setup.cfg to write base-dir. May be redundant
