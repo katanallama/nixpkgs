@@ -16,6 +16,7 @@
   sympy,
   networkx,
   jinja2,
+  openai-triton,
   numpy, pyyaml, cffi, click, typing-extensions,
 
   # Unit tests
@@ -298,8 +299,17 @@ in buildPythonPackage rec {
 
     # the following are required for tensorboard support
     pillow six future tensorboard protobuf
-  ] ++ lib.optionals MPISupport [ mpi ]
-    ++ lib.optionals rocmSupport [ rocmtoolkit_joined ];
+  ]
+  ++ lib.optionals MPISupport [ mpi ]
+  ++ lib.optionals rocmSupport [ rocmtoolkit_joined ]
+  # rocm build requires openai-triton;
+  # openai-triton currently requires cuda_nvcc,
+  # so not including it in the cpu-only build;
+  # torch.compile relies on openai-triton,
+  # so we include it for the cuda build as well
+  ++ lib.optionals (rocmSupport || cudaSupport) [
+    openai-triton
+  ];
 
   # Tests take a long time and may be flaky, so just sanity-check imports
   doCheck = false;
