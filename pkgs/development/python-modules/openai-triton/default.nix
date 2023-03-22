@@ -22,6 +22,7 @@ let
   version = "2.0.0";
 
   ptxas = "${cudaPackages.cuda_nvcc}/bin/ptxas";
+  inherit (cudaPackages) backendStdenv;
 in
 buildPythonPackage {
   inherit pname version;
@@ -123,6 +124,9 @@ buildPythonPackage {
   ];
 
 
+  # Avoid GLIBCXX mismatch with other cuda-enabled python packages
+  env.CC = "${backendStdenv.cc}/bin/cc";
+  env.CXX = "${backendStdenv.cc}/bin/c++";
   preConfigure =
     # Upstream's setup.py tries to write cache somewhere in ~/
     ''
