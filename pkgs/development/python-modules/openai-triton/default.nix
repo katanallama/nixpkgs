@@ -33,7 +33,7 @@ buildPythonPackage {
 
   src = fetchFromGitHub {
     owner = "openai";
-    repo = "triton";
+    repo = pname;
     rev = "v${version}";
     hash = "sha256-9GZzugab+Pdt74Dj6zjlEzjj4BcJ69rzMJmqcVMxsKU=";
   };
@@ -80,10 +80,7 @@ buildPythonPackage {
       '{}' ';'
     substituteInPlace unittest/CMakeLists.txt --replace "include(GoogleTest)" "find_package(GTest REQUIRED)"
     sed -i 's/^include.*$//' unittest/CMakeLists.txt
-  '' + ''
     sed -i '/LINK_LIBS/i NVPTXInfo' lib/Target/PTX/CMakeLists.txt
-  ''
-  + ''
     sed -i '/LINK_LIBS/i NVPTXCodeGen' lib/Target/PTX/CMakeLists.txt
   ''
   # # TritonMLIRIR already links MLIRIR. Not transitive?
@@ -147,7 +144,6 @@ buildPythonPackage {
     filelock
   ];
 
-
   # Avoid GLIBCXX mismatch with other cuda-enabled python packages
   preConfigure =
     ''
@@ -164,7 +160,7 @@ buildPythonPackage {
       echo "[build_ext]" >> python/setup.cfg
       echo "base-dir=$PWD" >> python/setup.cfg
     ''
-    # There rest (including buildPhase) is relative to ./python/
+    # The rest (including buildPhase) is relative to ./python/
     + ''
       cd python/
     ''
