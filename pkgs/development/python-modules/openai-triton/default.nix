@@ -174,7 +174,7 @@ buildPythonPackage {
       ln -s "${ptxas}" "$dst_cuda/"
     '';
 
-  # CMake is ran by setup.py instead
+  # CMake is run by setup.py instead
   dontUseCmakeConfigure = true;
   cmakeFlags = [
     "-DMLIR_DIR=${llvmPackages.mlir}/lib/cmake/mlir"
