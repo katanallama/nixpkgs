@@ -14,10 +14,10 @@
 
   # Propagated build inputs
   filelock,
-  sympy,
-  networkx,
   jinja2,
+  networkx,
   openai-triton,
+  sympy,
   numpy, pyyaml, cffi, click, typing-extensions,
 
   # Unit tests
