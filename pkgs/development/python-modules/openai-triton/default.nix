@@ -1,7 +1,9 @@
 { lib
 , buildPythonPackage
+, python
 , fetchurl
 , fetchFromGitHub
+, addOpenGLRunpath
 , cmake
 , cudaPackages ? { }
 , llvmPackages
@@ -21,8 +23,8 @@ let
   pname = "triton";
   version = "2.0.0";
 
-  ptxas = "${cudaPackages.cuda_nvcc}/bin/ptxas";
-  inherit (cudaPackages) backendStdenv;
+  inherit (cudaPackages) cuda_nvcc cuda_cudart backendStdenv;
+  ptxas = "${cuda_nvcc}/bin/ptxas";
 in
 buildPythonPackage {
   inherit pname version;
@@ -94,6 +96,28 @@ buildPythonPackage {
       --replace "add_subdirectory(FileCheck)" ""
 
     rm cmake/FindLLVM.cmake
+  ''
+  +
+  (
+    let
+      # Bash was getting weird without linting,
+      # but basically upstream contains [cc, ..., "-lcuda", ...]
+      # and we replace it with [..., "-lcuda", "-L/run/opengl-driver/lib", "-L$stubs", ...]
+      old = [ "-lcuda" ];
+      new = [ "-lcuda" "-L${addOpenGLRunpath.driverLink}" "-L${cuda_cudart}/lib/stubs/" ];
+
+      quote = x: ''"${x}"'';
+      oldStr = lib.concatMapStringsSep ", " quote old;
+      newStr = lib.concatMapStringsSep ", " quote new;
+    in
+    ''
+      substituteInPlace python/triton/compiler.py \
+        --replace '${oldStr}' '${newStr}'
+    ''
+  )
+  # Triton seems to be looking up cuda.h
+  + ''
+    sed -i 's|cu_include_dir = os.path.join.*$|cu_include_dir = "${cuda_cudart}/include}"|' python/triton/compiler.py
   '';
 
   nativeBuildInputs = [
@@ -160,6 +184,16 @@ buildPythonPackage {
     "-DLLVM_BUILD_LLVM_DYLIB=ON"
     # "-DLLVM_LINK_LLVM_DYLIB=ON"
   ];
+
+  postFixup =
+    let
+      ptxasDestination = "$out/${python.sitePackages}/triton/third_party/cuda/bin/ptxas";
+    in
+    # Setuptools (?) strips runpath and +x flags. Let's just restore the symlink
+    ''
+      rm -f ${ptxasDestination}
+      ln -s ${ptxas} ${ptxasDestination}
+    '';
 
   checkInputs = [
     cmake # ctest
