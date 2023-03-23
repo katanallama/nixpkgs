@@ -40,6 +40,7 @@ buildPythonPackage {
 
   patches = [
     # Prerequisite for llvm15 patch
+    # TODO: fetchurl -> fetchpatch with the next update (saving rebuilds...)
     (fetchurl {
       url = "https://github.com/openai/triton/commit/2aba985daaa70234823ea8f1161da938477d3e02.patch";
       hash = "sha256-HEuLZFif++a/fKs3dyIhqSc+D2DPbzEXOSSR4nRWtgQ=";
@@ -49,7 +50,9 @@ buildPythonPackage {
       hash = "sha256-sl8woykSLCq4ZJYzEQdCPWM8rzv+s4RTK7PuqsTcmy8=";
     })
 
-    # Not using fetchurl because needed to remove binary diff for ptxas
+    # Source: https://github.com/openai/triton/commit/fc7a8e35819bda632bdcf1cf75fd9abe4d4e077a.patch
+    # The original patch adds ptxas binary, so we include our own clean copy
+    # Drop with the next update
     ./llvm15.patch
   ];
 
