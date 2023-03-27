@@ -26,6 +26,15 @@ let
 
   inherit (cudaPackages) cuda_cudart backendStdenv;
   ptxas = "${pkgsTargetTarget.cudaPackages.cuda_nvcc}/bin/ptxas";
+
+  llvm = (llvmPackages.llvm.override {
+    llvmTargetsToBuild = [ "NATIVE" "NVPTX" ];
+    # Upstream CI sets these too:
+    # targetProjects = [ "mlir" ];
+    extraCMakeFlags = [
+      "-DLLVM_INSTALL_UTILS=ON"
+    ];
+  });
 in
 buildPythonPackage {
   inherit pname version;
@@ -124,14 +133,8 @@ buildPythonPackage {
 
   nativeBuildInputs = [
     cmake
-    (llvmPackages.llvm.override {
-      llvmTargetsToBuild = [ "NATIVE" "NVPTX" ];
-      # Upstream CI sets these too:
-      # targetProjects = [ "mlir" ];
-      extraCMakeFlags = [
-        "-DLLVM_INSTALL_UTILS=ON"
-      ];
-    })
+
+    llvm
     llvmPackages.mlir
     lit
     pythonRelaxDepsHook
