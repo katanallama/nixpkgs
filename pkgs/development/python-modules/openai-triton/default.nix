@@ -1,7 +1,7 @@
 { lib
 , buildPythonPackage
 , python
-, fetchurl
+, fetchpatch
 , fetchFromGitHub
 , addOpenGLRunpath
 , cmake
@@ -40,20 +40,27 @@ buildPythonPackage {
 
   patches = [
     # Prerequisite for llvm15 patch
-    # TODO: fetchurl -> fetchpatch with the next update (saving rebuilds...)
-    (fetchurl {
+    (fetchpatch {
       url = "https://github.com/openai/triton/commit/2aba985daaa70234823ea8f1161da938477d3e02.patch";
-      hash = "sha256-HEuLZFif++a/fKs3dyIhqSc+D2DPbzEXOSSR4nRWtgQ=";
+      hash = "sha256-LGv0+Ut2WYPC4Ksi4803Hwmhi3FyQOF9zElJc/JCobk=";
     })
-    (fetchurl {
+    (fetchpatch {
       url = "https://github.com/openai/triton/commit/e3941f9d09cdd31529ba4a41018cfc0096aafea6.patch";
-      hash = "sha256-sl8woykSLCq4ZJYzEQdCPWM8rzv+s4RTK7PuqsTcmy8=";
+      hash = "sha256-A+Gor6qzFlGQhVVhiaaYOzqqx8yO2MdssnQS6TIfUWg=";
     })
 
     # Source: https://github.com/openai/triton/commit/fc7a8e35819bda632bdcf1cf75fd9abe4d4e077a.patch
     # The original patch adds ptxas binary, so we include our own clean copy
     # Drop with the next update
     ./llvm15.patch
+
+    # Remove the "torch" circular dependency.
+    # Needed for `pythonCheckImports`.
+    # Fails to apply
+    # (fetchpatch {
+    #   url = "https://github.com/openai/triton/commit/fc7c0b0e437a191e421faa61494b2ff4870850f1.patch";
+    #   hash = "sha256-f0shIqHJkVvuil2Yku7vuqWFn7VCRKFSFjYRlwx25ig=";
+    # })
   ];
 
   postPatch = ''
