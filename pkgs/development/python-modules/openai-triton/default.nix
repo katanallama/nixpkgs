@@ -230,6 +230,6 @@ buildPythonPackage {
     homepage = "https://github.com/openai/triton/";
     platforms = lib.platforms.unix;
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [ SomeoneSerge ];
   };
 }
