@@ -70,12 +70,6 @@ buildPythonPackage {
         '= get_thirdparty_packages(triton_cache_path)' \
         '= os.environ["cmakeFlags"].split()'
   ''
-  # A typo in setup.py?
-  # NOTE: Ok, now I'm disabling setuptools check anyway
-  # + ''
-  #   substituteInPlace python/setup.py \
-  #     --replace '"tests"' '"test"'
-  # ''
   # Wiring triton=2.0.0 with llcmPackages_rocm.llvm=5.4.3
   # Revisit when updating either triton or llvm
   + ''
@@ -94,7 +88,7 @@ buildPythonPackage {
     sed -i '/LINK_LIBS/i NVPTXInfo' lib/Target/PTX/CMakeLists.txt
     sed -i '/LINK_LIBS/i NVPTXCodeGen' lib/Target/PTX/CMakeLists.txt
   ''
-  # # TritonMLIRIR already links MLIRIR. Not transitive?
+  # TritonMLIRIR already links MLIRIR. Not transitive?
   # + ''
   #   echo "target_link_libraries(TritonPTX PUBLIC MLIRIR)" >> lib/Target/PTX/CMakeLists.txt
   # ''
@@ -189,7 +183,6 @@ buildPythonPackage {
 
     # TODO: Probably redundant
     "-DLLVM_BUILD_LLVM_DYLIB=ON"
-    # "-DLLVM_LINK_LLVM_DYLIB=ON"
   ];
 
   postFixup =
