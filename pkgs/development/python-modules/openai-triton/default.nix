@@ -17,14 +17,15 @@
 , torchWithRocm
 , pytest
 , pythonRelaxDepsHook
+, pkgsTargetTarget
 }:
 
 let
   pname = "triton";
   version = "2.0.0";
 
-  inherit (cudaPackages) cuda_nvcc cuda_cudart backendStdenv;
-  ptxas = "${cuda_nvcc}/bin/ptxas";
+  inherit (cudaPackages) cuda_cudart backendStdenv;
+  ptxas = "${pkgsTargetTarget.cudaPackages.cuda_nvcc}/bin/ptxas";
 in
 buildPythonPackage {
   inherit pname version;
