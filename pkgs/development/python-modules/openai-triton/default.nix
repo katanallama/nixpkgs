@@ -231,7 +231,6 @@ buildPythonPackage {
     "cmake"
     "lit"
   ];
-
   meta = with lib; {
     description = "Development repository for the Triton language and compiler";
     homepage = "https://github.com/openai/triton/";
