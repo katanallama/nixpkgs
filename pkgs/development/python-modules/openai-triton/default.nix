@@ -155,7 +155,7 @@ buildPythonPackage {
     ''
     # Upstream's setup.py tries to write cache somewhere in ~/
     + ''
-      export HOME=$PWD
+      export HOME=$TMPDIR
     ''
     # Upstream's github actions patch setup.cfg to write base-dir. May be redundant
     + ''
