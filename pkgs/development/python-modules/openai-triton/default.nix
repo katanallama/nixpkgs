@@ -136,7 +136,7 @@ buildPythonPackage {
     pythonRelaxDepsHook
 
     # Note for future:
-    # These *probably* should in depsTargetTarget
+    # These *probably* should go in depsTargetTarget
     # ...but we cannot test cross right now anyway
     # because we only support cudaPackages on x86_64-linux atm
     llvm
